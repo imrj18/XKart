@@ -1,0 +1,196 @@
+{% extends "layout.html" %}
+
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="container mt-4">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+<!-- Hero Section -->
+<section class="jumbotron text-center">
+    <div class="container">
+        <h1 class="jumbotron-heading">{{ product.title }}</h1>
+        <p class="lead text-muted mb-0">{{ product.description }}</p>
+    </div>
+</section>
+
+<!-- Breadcrumb -->
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="category.html">Category</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ product.title }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Product Details -->
+<div class="container">
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-12 col-lg-6">
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <a href="" data-toggle="modal" data-target="#productModal">
+                        <img class="img-fluid" src="{{ url_for('static', filename='images/products/' + product.image) }}" alt="{{ product.title }}" />
+                        <p class="text-center">Zoom</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Details and Add to Cart -->
+        <div class="col-12 col-lg-6 add_to_cart_block">
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <p class="price">{{ product.price }} $</p>
+                    <!-- Add to Cart Form -->
+                    <form action="{{ url_for('cart.add_to_cart', product_id=product.id) }}" method="POST">
+                        <button type="submit" class="btn btn-success btn-lg btn-block text-uppercase">
+                            <i class="fa fa-shopping-cart"></i> Add To Cart
+                        </button>
+                    </form>
+
+                    <!-- Wishlist Button -->
+                    <form method="POST">
+                        {% if product_in_wishlist %}
+                            <button type="submit" class="btn btn-danger btn-lg btn-block text-uppercase mt-3">Remove from Wishlist</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-warning btn-lg btn-block text-uppercase mt-3">Add to Wishlist</button>
+                        {% endif %}
+                    </form>
+
+                    <!-- Product Reassurance -->
+                    <div class="product_rassurance mt-4">
+                        <ul class="list-inline">
+                            <li class="list-inline-item"><i class="fa fa-truck"></i> Free Delivery</li>
+                            <li class="list-inline-item"><i class="fa fa-sync-alt"></i> 30-day Returns</li>
+                            <li class="list-inline-item"><i class="fa fa-lock"></i> Secure Payments</li>
+                        </ul>
+                    </div>
+
+                    <!-- Product Reviews -->
+                    <div class="reviews_product p-3 mb-2">
+                        3 reviews
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        (4/5)
+                        <a class="pull-right" href="#reviews">View all reviews</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Description Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-light mb-3">
+                <div class="card-header bg-primary text-white text-uppercase">
+                    <i class="fa fa-align-justify"></i> Description
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ product.description }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    <div class="mt-5">
+        <h3>Related Products</h3>
+        <div class="row">
+            {% for related_product in related_products %}
+                <div class="col-md-3">
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='images/products/' + related_product.image) }}" class="card-img-top" alt="{{ related_product.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ related_product.title }}</h5>
+                            <p class="card-text">{{ related_product.description }}</p>
+                            <p class="btn btn-danger btn-block">{{ related_product.price }} $</p>
+                            <a href="{{ url_for('product.product_detail', product_id=related_product.id) }}" class="btn btn-success btn-block">View</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal for Image Zoom -->
+<div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">{{ product.title }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img class="img-fluid" src="{{ url_for('static', filename='images/products/' + product.image) }}" alt="{{ product.title }}" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Popup Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="messageModalLabel">Notification</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <span id="popupMessage"></span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var popupMessage = "{{ popup_message|safe }}";
+        var popupType = "{{ popup_type|safe }}"; // e.g., 'success', 'warning'
+
+        if (popupMessage) {
+            document.getElementById('popupMessage').innerText = popupMessage;
+
+            // Update modal color based on type
+            var modalContent = document.querySelector('#messageModal .modal-content');
+            if (popupType === 'success') {
+                modalContent.classList.add('bg-success', 'text-white');
+            } else if (popupType === 'warning') {
+                modalContent.classList.add('bg-warning', 'text-dark');
+            }
+
+            // Show modal
+            var messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+            messageModal.show();
+        }
+    });
+</script>
+
+{% endblock %}

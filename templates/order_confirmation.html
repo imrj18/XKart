@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block content %}
+    <!-- Order Confirmation Content -->
+    <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">Order Confirmation</h1>
+            <p class="lead text-muted mb-0">Thank you for your order!</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Order Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Your order has been placed successfully. You will receive a confirmation email shortly.</p>
+                        <ul class="list-unstyled">
+                            <li class="d-flex justify-content-between">
+                                <span>Product 1</span>
+                                <span>$99.00</span>
+                            </li>
+                            <li class="d-flex justify-content-between">
+                                <span>Product 2</span>
+                                <span>$98.00</span>
+                            </li>
+                            <li class="d-flex justify-content-between">
+                                <strong>Total</strong>
+                                <strong>$197.00</strong>
+                            </li>
+                        </ul>
+                        <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

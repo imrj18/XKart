@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="jumbotron text-center">
+    <div class="container">
+        <h1 class="jumbotron-heading">Shopping Cart</h1>
+        <p class="lead text-muted mb-0">Your cart summary</p>
+    </div>
+</section>
+
+<div class="container">
+    {% if products|length > 0 %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Subtotal</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                            <tr>
+                                <td>
+                                    <img src="{{ url_for('static', filename='images/products/' + product.image) }}" alt="{{ product.title }}" width="50" height="50">
+                                    <a href="{{ url_for('product.product_detail', product_id=product.id) }}">{{ product.title }}</a>
+                                </td>
+
+                                <td>
+                                    <form action="{{ url_for('cart.update_cart', product_id=product.id) }}" method="post">
+                                        <input type="number" name="quantity" value="{{ cart_items.get(product.id, 1) }}" min="1" max="{{ product.stock }}">
+                                        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                                    </form>
+                                </td>
+                                <td>₹{{ product.price }}</td>
+                                <td>₹{{ product.price * cart_items.get(product.id, 1) }}</td>
+                                <td>
+                                    <form action="{{ url_for('cart.remove_from_cart', product_id=product.id) }}" method="post">
+                                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <h4>Total: ₹{{ total_price }}</h4>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('home') }}" class="btn btn-secondary">Continue Shopping</a>
+                <a href="{{ url_for('cart.checkout') }}" class="btn btn-success">Proceed to Checkout</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12 text-center">
+            <p class="lead">Your cart is empty. <a href="{{ url_for('home') }}">Continue shopping</a>.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

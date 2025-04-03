@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">Nearby Vendors</h1>
+            <p class="lead text-muted mb-0">Find vendors near you by city and area</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <!-- Search Form for City and Area -->
+                        <form action="{{ url_for('nearby_vendor_page') }}" method="POST">
+                            <div class="form-group">
+                                <label for="city">City</label>
+                                <input type="text" class="form-control" id="city" name="city" value="{{ user_city }}" placeholder="Enter your city" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="area">Area</label>
+                                <input type="text" class="form-control" id="area" name="area" value="{{ user_area }}" placeholder="Enter your area" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Search Vendors</button>
+                        </form>
+
+                        {% if vendors %}
+                            <hr>
+                            <h4>Nearby Vendors</h4>
+                            <ul class="list-group">
+                                {% for vendor in vendors %}
+                                    <li class="list-group-item">
+                                        <strong>{{ vendor.shop_name }}</strong><br>
+                                        {{ vendor.city }}, {{ vendor.area }}<br>
+                                        {{ vendor.username }}<br>
+                                        <a href="{{ url_for('vendor.vendor_products', vendor_id=vendor.id) }}" class="btn btn-link">View Products</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <hr>
+                            <p>No vendors found in this location.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

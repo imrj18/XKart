@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Privacy Policy</h2>
+    <p>
+        At xKart, your privacy is of utmost importance to us. This Privacy Policy outlines how we collect, use, and protect your personal information.
+    </p>
+    <h4>Information We Collect</h4>
+    <ul>
+        <li>Personal information you provide during registration, such as name, email, and address.</li>
+        <li>Transaction details, including payment information and order history.</li>
+        <li>Cookies and usage data to improve your experience on our platform.</li>
+    </ul>
+    <h4>How We Use Your Information</h4>
+    <ul>
+        <li>To process orders and deliver products.</li>
+        <li>To provide customer support and resolve issues.</li>
+        <li>To improve our services and personalize your experience.</li>
+    </ul>
+    <h4>Your Rights</h4>
+    <p>
+        You have the right to access, update, or delete your personal information. Please contact us for any concerns regarding your data.
+    </p>
+    <a href="{{ url_for('home') }}" class="btn btn-primary mt-3">Back to Home</a>
+</div>
+{% endblock %}

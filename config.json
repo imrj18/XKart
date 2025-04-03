@@ -1,0 +1,13 @@
+{
+  "params": {
+    "local_server": "True",
+    "local_url": "mysql+pymysql://root:@localhost/xkart",
+    "glb_url": "mysql+pymysql://root:@localhost/xkart",
+    "secret_key": "a7f5b8f8e8c9d2f3b9e1e8f9b8a8e8a1",
+    "MAIL_SERVER": "smtp.gmail.com",
+    "MAIL_PORT": 587,
+    "MAIL_USE_TLS": true,
+    "UPLOAD_FOLDER": "static/images/products",
+    "ALLOWED_EXTENSIONS": ["png", "jpg", "jpeg", "gif"]
+  }
+}

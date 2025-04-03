@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">{{ vendor.shop_name }}</h1>
+            <p class="lead text-muted mb-0">{{ vendor.username }} - {{ vendor.city }}, {{ vendor.area }}</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="row">
+            {% if products %}
+                <div class="col-md-12">
+                    <h4>Products by {{ vendor.shop_name }}</h4>
+                    <div class="row">
+                        {% for product in products %}
+                            <div class="col-md-4">
+                                <div class="card mb-4">
+                                    <img class="card-img-top" src="{{ product.image_url }}" alt="{{ product.name }}">
+                                    <div class="card-body">
+                                        <img class="img-fluid" src="{{ url_for('static', filename='images/products/' + product.image) }}" alt="{{ product.title }}" />
+                                        <h5 class="card-title">{{ product.name }}</h5>
+                                        <p class="card-text">{{ product.description }}</p>
+                                        <p><strong>Price: ${{ product.price }}</strong></p>
+                                        <!-- Button to view product details -->
+                                        <a href="{{ url_for('product.product_detail', product_id=product.id) }}" class="btn btn-primary">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-md-12">
+                    <p>No products available for this vendor.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

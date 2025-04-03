@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Vendor Profile Info -->
+        <div class="col-md-12">
+            <div class="card mt-4">
+                <div class="card-header bg-success text-white text-uppercase">
+                    <i class="fa fa-user"></i> Profile Info
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item"><strong>Username:</strong> {{ user.username }}</li>
+                        <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+                        <li class="list-group-item"><strong>Shop Name:</strong> {{ user.shop_name }}</li>
+                        <li class="list-group-item"><strong>Registration Date:</strong> {{ user.created_at.strftime('%d %B %Y') }}</li>
+                    </ul>
+
+                    <!-- Buttons Below Profile Info -->
+                    <div class="mt-3">
+                        <a href="{{ url_for('vendor.change_password') }}" class="btn btn-success btn-block">Change Password</a>
+                        <a href="{{ url_for('vendor.edit_profile') }}" class="btn btn-warning btn-block">Edit Profile</a>
+                        <a href="{{ url_for('vendor.dashboard') }}" class="btn btn-secondary btn-block">Back to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<section class="jumbotron text-center">
+    <div class="container">
+        <h1 class="jumbotron-heading">Admin Dashboard</h1>
+        <p class="lead text-muted mb-0">Manage the website and users</p>
+    </div>
+</section>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="list-group">
+                <a href="{{ url_for('admin.manage_users') }}" class="list-group-item list-group-item-action">Manage Users</a>
+                <a href="{{ url_for('admin.manage_products') }}" class="list-group-item list-group-item-action">Manage Products</a>
+                <a href="{{ url_for('admin.manage_orders') }}" class="list-group-item list-group-item-action">View Orders</a>
+                <a href="{{ url_for('admin.settings') }}" class="list-group-item list-group-item-action">Website Settings</a>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <!-- Dashboard content goes here -->
+            <h4>Overview</h4>
+            <p>Monitor website activity and manage settings here.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

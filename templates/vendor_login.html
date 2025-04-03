@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+    <!-- Login Content -->
+    <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">Vendor Login</h1>
+            <p class="lead text-muted mb-0">Welcome back, please log in to your vendor account</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <!-- Display Flash Messages -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                <ul class="flashes">
+                                    {% for category, message in messages %}
+                                        <li class="alert alert-{{ category }}">{{ message }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% endwith %}
+
+                        <form action="{{ url_for('vendor.vendor_login') }}" method="post">
+                            <div class="form-group">
+                                <label for="inputEmail">Email</label>
+                                <input type="email" class="form-control" id="inputEmail" name="email" placeholder="you@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPassword">Password</label>
+                                <input type="password" class="form-control" id="inputPassword" name="password" placeholder="Password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </form>
+                        <hr>
+                        <p class="text-center">Don't have an account? <a href="{{ url_for('vendor.vendor_register') }}">Register here</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,81 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #f8f9fa;
+    min-height: 100vh; /* Ensure the body takes at least the full height of the viewport */
+    display: flex;
+    flex-direction: column;
+}
+
+.bloc_left_price {
+    color: #c01508;
+    text-align: center;
+    font-weight: bold;
+    font-size: 150%;
+}
+
+.img-fluid {
+    max-width: 100%; /* Ensures image doesn't exceed its container width */
+    height: auto; /* Maintain aspect ratio */
+    object-fit: contain; /* Display the full image without cropping */
+}
+
+/* Category Block */
+.category_block li {
+    list-style: none;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+    text-align: center;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.category_block li:hover {
+    background-color: #007bff;
+    cursor: pointer;
+}
+
+.category_block li:hover a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.category_block li a {
+    color: #343a40;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+/* Add to Cart Block */
+.add_to_cart_block .price {
+    color: #c01508;
+    font-size: 24px;
+}
+
+.main-content {
+    padding: 10px;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    margin-top: auto; /* Push footer to bottom of the page */
+}
+
+footer a {
+    color: #fff;
+    text-decoration: none;
+}
+
+footer .copyright {
+    text-align: left;
+    padding-left: 20px;
+}

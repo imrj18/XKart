@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-info text-white text-uppercase">
+                    <i class="fa fa-info-circle"></i> About Us
+                </div>
+                <div class="card-body">
+                    <h3>Welcome to xKart!</h3>
+                    <p>
+                        At <strong>xKart</strong>, we are dedicated to empowering local commerce. Our mission is to provide a platform where local vendors, artisans, and small businesses can showcase their products to a wider audience, fostering growth and supporting the local economy.
+                    </p>
+                    <p>
+                        We aim to create an ecosystem that connects communities, promotes sustainability, and encourages the celebration of local art and culture. Whether you’re a vendor looking to expand your reach or a customer searching for unique, locally made products, xKart is here to make that connection.
+                    </p>
+                    <h4>Our Vision</h4>
+                    <ul>
+                        <li>Support local businesses and artisans.</li>
+                        <li>Promote sustainable and ethical shopping practices.</li>
+                        <li>Bridge the gap between vendors and customers with seamless technology.</li>
+                    </ul>
+                    <h4>Why Choose Us?</h4>
+                    <p>
+                        We believe in the power of local commerce and strive to provide:
+                    </p>
+                    <ul>
+                        <li>A user-friendly platform for both vendors and customers.</li>
+                        <li>Secure payment and reliable delivery options.</li>
+                        <li>Exceptional customer support to ensure satisfaction.</li>
+                    </ul>
+                    <p>
+                        Join us on this journey to make local commerce thrive in the digital age!
+                    </p>
+                    <a href="{{ url_for('home') }}" class="btn btn-primary btn-block">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Terms of Service</h2>
+    <p>
+        Welcome to xKart! By using our platform, you agree to the following terms of service:
+    </p>
+    <h4>Account Registration</h4>
+    <p>
+        You must provide accurate information during registration. You are responsible for keeping your account secure.
+    </p>
+    <h4>Prohibited Activities</h4>
+    <ul>
+        <li>Using our platform for unlawful purposes.</li>
+        <li>Sharing false or misleading information.</li>
+        <li>Attempting to breach our security systems.</li>
+    </ul>
+    <h4>Limitation of Liability</h4>
+    <p>
+        xKart is not liable for any damages or losses resulting from the use of our platform, including delays or interruptions in service.
+    </p>
+    <h4>Changes to Terms</h4>
+    <p>
+        We reserve the right to modify these terms at any time. Continued use of the platform constitutes acceptance of the updated terms.
+    </p>
+    <a href="{{ url_for('home') }}" class="btn btn-primary mt-3">Back to Home</a>
+</div>
+{% endblock %}

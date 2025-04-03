@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Your Wishlist</h2>
+
+    {% if products %}
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <!-- Product Image -->
+                <img src="{{ url_for('static', filename='images/products/' + product.image) if product.image else url_for('static', filename='images/default-product.png') }}"
+                     class="card-img-top"
+                     alt="{{ product.title }}">
+                <div class="card-body">
+                    <!-- Product Title -->
+                    <h5 class="card-title">{{ product.title }}</h5>
+                    <p class="card-text">{{ product.description }}</p>
+                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary">View Product</a>
+                    <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn btn-success">Add To Cart</a>
+                    <!-- Remove Product from Wishlist -->
+                    <form method="POST" action="{{ url_for('remove_from_wishlist', product_id=product.id) }}">
+                        <button type="submit" class="btn btn-danger btn-block">Remove From Wishlist</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p class="text-center text-muted">Your wishlist is empty.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
