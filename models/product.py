@@ -14,6 +14,7 @@ class Product(db.Model):
     rating = db.Column(db.Float, nullable=True)  # Added rating column
 
     wishlist_items = db.relationship('Wishlist', back_populates='product', cascade='all, delete-orphan')
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
 
     def __repr__(self):
         return f'<Product {self.title}>'

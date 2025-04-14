@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<style>
+    .product-item {
+    display: inline-block;
+    width: 20%;
+    padding: 10px;
+    margin: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    text-align: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    transition: transform 0.3s ease-in-out;
+    }
+
+    .product-item:hover {
+        transform: translateY(-10px);
+    }
+
+    .product-item img {
+        width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+    }
+
+    .product-item h3 {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+    }
+
+    .product-item .price {
+        color: #28a745;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .product-item a {
+        background-color: #007bff;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 3px;
+        text-decoration: none;
+    }
+
+    .product-item a:hover {
+        background-color: #0056b3;
+    }
+
+</style>
+
+{% endblock %}
+{% block content %}
+    <h2 style="text-align: center;">Search Results for "{{ search_query }}"</h2>
+
+    {% if products %}
+        <div class="product-list">
+            {% for product in products %}
+                <div class="product-item">
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                    <h3>{{ product.name }}</h3>
+                    <p>{{ product.description }}</p>
+                    <p class="price">Price: ${{ product.price }}</p>
+                    <a href="{{ url_for('product.product_detail', product_id=product.id) }}">View Details</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No products found matching your search criteria.</p>
+    {% endif %}
+{% endblock %}

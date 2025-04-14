@@ -19,8 +19,8 @@
         <ul class="list-group list-group-flush">
             {% for order in orders %}
             <li class="list-group-item">
-                Order ID: {{ order.id }} | Total: ${{ order.total }} | Status: {{ order.status }} |
-                <a href="{{ url_for('order.order_details', order_id=order.id) }}">View Details</a>
+                Order ID: {{ order.id }} | Total: ${{ order.total_amount }} | Status: {{ order.status }} |
+                <a href="{{ url_for('order.view_order_details', order_id=order.id) }}">View Details</a>
             </li>
             {% else %}
             <li class="list-group-item">No recent orders found.</li>

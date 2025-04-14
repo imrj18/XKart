@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2 style="text-align: center;">All Categories</h2>
+
+<div class="category-table-container" style="display: flex; justify-content: center; padding: 20px;">
+    <table style="width: 60%; border-collapse: collapse; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <thead>
+            <tr style="background-color: #4CAF50; color: white; text-align: center;">
+                <th style="padding: 10px;">Category Name</th>
+                <th style="padding: 10px;">View Products</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+                <tr style="border-bottom: 1px solid #ddd; text-align: center;">
+                    <td style="padding: 10px;">{{ category.name }}</td>
+                    <td style="padding: 10px;">
+                        <a href="{{ url_for('category.category_products', slug=category.slug) }}" style="color: #4CAF50; text-decoration: none; font-weight: bold;">
+                            View Products
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+{% endblock %}

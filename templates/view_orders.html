@@ -1,12 +1,16 @@
 {% extends "layout.html" %}
+
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">View Orders</h2>
+    <h2 class="mb-4">Your Orders</h2>
+    <!-- Display a message if no orders exist -->
+    {% if not orders %}
+    <p>You have no orders yet.</p>
+    {% else %}
     <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Order ID</th>
-                <th>Customer Name</th>
                 <th>Product Name</th>
                 <th>Quantity</th>
                 <th>Total Amount</th>
@@ -18,18 +22,20 @@
             {% for order in orders %}
             <tr>
                 <td>{{ order.id }}</td>
-                <td>{{ order.customer_name }}</td>
                 <td>{{ order.product_name }}</td>
                 <td>{{ order.quantity }}</td>
                 <td>${{ order.total_amount }}</td>
                 <td>{{ order.status }}</td>
                 <td>
-                    <a href="{{ url_for('vendor.view_order_details', order_id=order.id) }}" class="btn btn-info btn-sm">View Details</a>
-                    <a href="{{ url_for('vendor.update_order_status', order_id=order.id) }}" class="btn btn-warning btn-sm">Update Status</a>
+                    <a href="{{ url_for('order.view_order_details', order_id=order.id) }}" class="btn btn-info btn-sm">View Details</a>
+<!--                    {% if order.status != 'Delivered' %}-->
+                    <a href="{{ url_for('download_bill', order_id=order.id) }}" class="btn btn-success btn-sm">Download Bill</a>
+<!--                    {% endif %}-->
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    {% endif %}
 </div>
 {% endblock %}

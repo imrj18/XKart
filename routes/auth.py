@@ -13,19 +13,38 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-
-        # Fetch user from the database
+        email = request.form['email']
+        password = request.form['password']
         user = User.query.filter_by(email=email).first()
 
-        if user and bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-            login_user(user)
-            session.permanent = True  # This will apply the permanent session lifetime
-            flash('Logged in successfully as User.', 'success')
-            return redirect(url_for('home'))
+        if user:
+            if user.is_google_user:
+                flash("This email is registered via Google. Please use 'Continue with Google' to log in.", "warning")
+                return redirect(url_for('auth.login'))
+
+            if check_password_hash(user.password, password):
+                # 🔁 Backup session cart before login
+                anon_cart = session.get('cart', {})
+
+                # ✅ Login user
+                login_user(user)
+
+                # 🔁 Restore session cart after login
+                if 'cart' not in session or not session['cart']:
+                    session['cart'] = anon_cart
+                else:
+                    # Optional: merge anonymous cart with existing one
+                    for pid, qty in anon_cart.items():
+                        session['cart'][pid] = session['cart'].get(pid, 0) + qty
+
+                session.modified = True
+
+                flash("Logged in successfully", "success")
+                return redirect(url_for('home'))
+            else:
+                flash("Incorrect password", "danger")
         else:
-            flash('Invalid email or password.', 'danger')
+            flash("Email not found", "danger")
 
     return render_template('login.html')
 
@@ -38,10 +57,10 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
-        city = request.form.get('city')  # New field for city
-        area = request.form.get('area')  # New field for area
+        city = request.form.get('city')
+        area = request.form.get('area')
 
-        # Validate input
+        # Validation
         if not username or not email or not password or not confirm_password or not city or not area:
             flash('All fields are required!', 'danger')
             return render_template('register.html')
@@ -50,17 +69,27 @@ def register():
             flash('Passwords do not match!', 'danger')
             return render_template('register.html')
 
-        if User.query.filter_by(email=email).first():
-            flash('Email already registered.', 'danger')
-            return render_template('register.html')
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            if existing_user.is_google_user:
+                flash("This email is already registered using Google. Please use 'Continue with Google' to login.", "danger")
+                return redirect(url_for('auth.login'))
+            else:
+                flash('Email already registered.', 'danger')
+                return render_template('register.html')
 
-        # Hash the password using bcrypt
+        # Password Hash
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
         try:
-            # Create a new user
-            new_user = User(username=username, email=email, password=hashed_password.decode('utf-8'),
-                            city=city, area=area)  # Include city and area
+            new_user = User(
+                username=username,
+                email=email,
+                password=hashed_password.decode('utf-8'),
+                city=city,
+                area=area,
+                is_google_user=False
+            )
             db.session.add(new_user)
             db.session.commit()
             flash('Registration successful! You can now log in.', 'success')
@@ -70,6 +99,27 @@ def register():
             flash('An error occurred. Please try again.', 'danger')
 
     return render_template('register.html')
+
+
+@bp.route('/set-password', methods=['GET', 'POST'])
+@login_required
+def set_password():
+    if request.method == 'POST':
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+
+        if password != confirm_password:
+            flash("Passwords do not match!", "danger")
+            return render_template('set_password.html')
+
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        current_user.password = hashed_password.decode('utf-8')
+        db.session.commit()
+
+        flash("Password set successfully! You can now log in using email and password.", "success")
+        return redirect(url_for('home'))
+
+    return render_template('set_password.html')
 
 
 @bp.route('/dashboard')
@@ -82,7 +132,9 @@ def dashboard():
     wishlist = [item.product for item in wishlist_items]  # Assuming Wishlist has a product relation
 
     # Fetch recent orders (if needed)
-    orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.created_at.desc()).limit(5).all()
+    orders = Order.query.filter_by(user_id=current_user.id) \
+        .order_by(Order.created_at.desc()) \
+        .limit(3).all()
 
     return render_template('dashboard.html', wishlist=wishlist, orders=orders)
 
@@ -155,3 +207,4 @@ def edit_profile():
         return redirect(url_for('auth.dashboard'))
 
     return render_template('user_edit_profile.html')
+

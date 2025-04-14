@@ -7,11 +7,12 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
+    password = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     city = db.Column(db.String(100), nullable=True, default='Unknown')
     area = db.Column(db.String(100), nullable=True, default='Unknown')
     is_vendor = db.Column(db.Boolean, default=False)
+    is_google_user = db.Column(db.Boolean, default=False)
 
     # Link to the Order model
     orders = db.relationship('Order', back_populates='user', cascade='all, delete-orphan')

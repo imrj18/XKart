@@ -1,64 +1,79 @@
 {% extends "layout.html" %}
 {% block content %}
     <!-- Register Content -->
-    <section class="jumbotron text-center">
-        <div class="container">
-            <h1 class="jumbotron-heading">Register</h1>
-            <p class="lead text-muted mb-0">Create a new account</p>
-        </div>
-    </section>
-
+<section class="jumbotron text-center">
     <div class="container">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <div class="card mb-4">
-                    <div class="card-body">
+        <h1 class="jumbotron-heading">Register</h1>
+        <p class="lead text-muted mb-0">Create a new account</p>
+    </div>
+</section>
 
-                        <!-- Display Flash Messages -->
-                        {% with messages = get_flashed_messages(with_categories=true) %}
-                            {% if messages %}
-                                <ul class="flashes">
-                                    {% for category, message in messages %}
-                                        <li class="alert alert-{{ category }}">{{ message }}</li>
-                                    {% endfor %}
-                                </ul>
-                            {% endif %}
-                        {% endwith %}
+<!-- Flash Message Block -->
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+</div>
 
-                        <form action="{{ url_for('auth.register') }}" method="post">
-                            <div class="form-group">
-                                <label for="inputUsername">Username</label>
-                                <input type="text" class="form-control" id="inputUsername" name="username" placeholder="John Doe" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="inputEmail">Email</label>
-                                <input type="email" class="form-control" id="inputEmail" name="email" placeholder="you@example.com" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="inputPassword">Password</label>
-                                <input type="password" class="form-control" id="inputPassword" name="password" placeholder="Password" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="inputConfirmPassword">Confirm Password</label>
-                                <input type="password" class="form-control" id="inputConfirmPassword" name="confirm_password" placeholder="Confirm Password" required>
-                            </div>
-                            <!-- Add City Field -->
-                            <div class="form-group">
-                                <label for="inputCity">City</label>
-                                <input type="text" class="form-control" id="inputCity" name="city" placeholder="City" required>
-                            </div>
-                            <!-- Add Area Field -->
-                            <div class="form-group">
-                                <label for="inputArea">Area</label>
-                                <input type="text" class="form-control" id="inputArea" name="area" placeholder="Area" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Register</button>
-                        </form>
-                        <hr>
-                        <p class="text-center">Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a>.</p>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card mb-4">
+                <div class="card-body">
+
+                    <form action="{{ url_for('auth.register') }}" method="post">
+                        <div class="form-group">
+                            <label for="inputUsername">Username</label>
+                            <input type="text" class="form-control" id="inputUsername" name="username" placeholder="John Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputEmail">Email</label>
+                            <input type="email" class="form-control" id="inputEmail" name="email" placeholder="you@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputPassword">Password</label>
+                            <input type="password" class="form-control" id="inputPassword" name="password" placeholder="Password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputConfirmPassword">Confirm Password</label>
+                            <input type="password" class="form-control" id="inputConfirmPassword" name="confirm_password" placeholder="Confirm Password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputCity">City</label>
+                            <input type="text" class="form-control" id="inputCity" name="city" placeholder="City" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputArea">Area</label>
+                            <input type="text" class="form-control" id="inputArea" name="area" placeholder="Area" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Register</button>
+                    </form>
+
+                    <hr>
+                    <p class="text-center">OR</p>
+
+                    <!-- Google Sign-In Button -->
+                    <div class="text-center mb-3">
+                        <a href="{{ url_for('google_login') }}" class="btn btn-outline-danger btn-block">
+                            <img src="https://developers.google.com/identity/images/g-logo.png" width="20" style="margin-bottom:3px; margin-right:8px;">
+                            Continue with Google
+                        </a>
                     </div>
+
+                    <hr>
+                    <p class="text-center">Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a>.</p>
                 </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}

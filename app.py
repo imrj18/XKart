@@ -1,27 +1,52 @@
 from datetime import timedelta
 
-from flask import Flask, render_template, session, redirect, url_for, request, flash
-from flask_login import LoginManager, current_user, login_required
+from flask import Flask, session, redirect, request, flash, current_app
+from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_migrate import Migrate
 # from dotenv import load_dotenv
-import os
+# import os
 import json
 
+import pdfkit
 from sqlalchemy import func
 
-from models import User, Product
+from models import User, Product, Order, category
+from models.category import Category
+
+# from models.order import OrderItem
+
 ''' wishlist, admin '''
 # from models.admin import Admin, Log
 from models.cart import Cart
 from models.vendor import Vendor
-from routes import auth, product, cart, order, vendor, wishlist, admin
+from routes import auth, product, cart, order, vendor, wishlist, admin, category
 from models.db import db
+from authlib.integrations.flask_client import OAuth
+from dotenv import load_dotenv
+from flask import render_template, send_file, url_for
+import qrcode
+import os
 
 # Load environment variables
 # load_dotenv()
 
 # Application factory function
 app = Flask(__name__)
+
+# OAuth Configuration
+oauth = OAuth(app)
+google = oauth.register(
+    name='google',
+    GOOGLE_CLIENT_ID=os.environ.get("GOOGLE_CLIENT_ID"),
+    GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET"),
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    access_token_params=None,
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+    authorize_params=None,
+    api_base_url='https://www.googleapis.com/oauth2/v1/',
+    userinfo_endpoint='https://www.googleapis.com/oauth2/v1/userinfo',
+    client_kwargs={'scope': 'openid email profile'},
+)
 
 # Set up configuration from the environment and config.json
 try:
@@ -60,6 +85,7 @@ app.register_blueprint(order.bp)
 app.register_blueprint(vendor.bp)
 app.register_blueprint(wishlist.bp)
 app.register_blueprint(admin.bp)
+app.register_blueprint(category.bp)
 
 
 # @login_manager.user_loader
@@ -81,6 +107,74 @@ def home():
     latest_products = Product.query.order_by(Product.created_at.desc()).limit(5).all()
     random_products = Product.query.order_by(func.random()).limit(10).all()
     return render_template('index.html', latest_products=latest_products, random_products=random_products)
+
+
+# ========== Google OAuth Setup ==========
+# Load environment variables
+load_dotenv()
+
+oauth = OAuth(app)
+google = oauth.register(
+    name='google',
+    client_id=os.getenv("GOOGLE_CLIENT_ID"),
+    client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_kwargs={'scope': 'openid email profile'}
+)
+
+
+# Google Login route
+@app.route('/google-login')
+def google_login():
+    session['anon_cart'] = session.get('cart', {}).copy()
+    return google.authorize_redirect(redirect_uri=url_for('google_callback', _external=True))
+    #redirect_uri = url_for('google_callback', _external=True)
+    #return google.authorize_redirect(redirect_uri)
+
+
+@app.route('/google-callback')
+def google_callback():
+    anon_cart = session.pop('anon_cart', {})  # 🛒 restore temp cart
+
+    token = google.authorize_access_token()
+    user_info = google.get('https://www.googleapis.com/oauth2/v1/userinfo').json()
+
+    if not user_info or 'email' not in user_info:
+        return "Failed to retrieve user info", 400
+
+    email = user_info['email']
+    username = user_info.get('name', 'GoogleUser')
+
+    user = User.query.filter_by(email=email).first()
+    if user:
+        if not user.is_google_user:
+            flash("This email is registered via Email/Password. Please use email login.", "warning")
+            return redirect(url_for('auth.login'))
+    else:
+        user = User(email=email, username=username, is_google_user=True)
+        db.session.add(user)
+        db.session.commit()
+
+    login_user(user)
+
+    # 🛒 Merge cart from before login
+    current_cart = session.get('cart', {})
+    for pid, qty in anon_cart.items():
+        current_cart[pid] = current_cart.get(pid, 0) + qty
+    session['cart'] = current_cart
+    session.modified = True
+
+    flash("Logged in with Google successfully", "success")
+    return redirect(url_for('home'))
+
+
+# Optional Logout route
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    session.clear()
+    return redirect(url_for('home'))
 
 
 @app.route("/index.html")
@@ -109,9 +203,28 @@ def nearby_vendor_page():
     return render_template('nearby_vendor.html', vendors=vendors, user_city=user_city, user_area=user_area)
 
 
-@app.route("/category.html")
-def category_page():
-    return render_template('category.html')
+@app.route('/search', methods=['GET'])
+def search_results():
+    # Get the search query from the form
+    search_query = request.args.get('search')
+
+    # If search query exists, filter products by name or description
+    if search_query:
+        products = Product.query.filter(
+            (Product.title.ilike(f'%{search_query}%')) |
+            (Product.description.ilike(f'%{search_query}%'))
+        ).all()
+    else:
+        # If no search query, return all products
+        products = Product.query.all()
+
+    return render_template('search_results.html', products=products, search_query=search_query)
+
+
+@app.route('/categories')
+def categories_page():
+    categories = Category.query.all()  # Fetch all categories
+    return render_template('categories.html', categories=categories)
 
 
 @app.route("/product.html")
@@ -188,6 +301,11 @@ def faq():
     return render_template('faq.html')
 
 
+@app.route('/debug-session')
+def debug_session():
+    return str(session.get('cart'))
+
+
 # Vendor login required decorator
 def vendor_required(f):
     def wrapper(*args, **kwargs):
@@ -222,6 +340,53 @@ def inject_cart_count():
         # Count cart items stored in the session for anonymous users
         cart_count = sum(session.get('cart', {}).values())
     return dict(cart_count=cart_count)
+
+
+@app.route('/download-bill/<int:order_id>')
+def download_bill(order_id):
+    order = Order.query.get_or_404(order_id)
+    order_items = order.order_items
+
+    # Generate QR Code
+    qr = qrcode.make(
+        f"XKart Invoice\nOrder ID: {order.id}\nCustomer: {order.customer_name}\nTotal: ${order.total_amount}"
+    )
+
+    qr_dir = os.path.join(current_app.root_path, 'static', 'qr')
+    os.makedirs(qr_dir, exist_ok=True)
+    qr_path = os.path.join(qr_dir, f'qr_{order.id}.png')
+    qr.save(qr_path)
+
+    # Use external URL for QR code in HTML template
+    qr_url = url_for('static', filename=f'qr/qr_{order.id}.png', _external=True)
+
+    # Render HTML
+    rendered = render_template(
+        'invoice.html',
+        order=order,
+        order_items=order_items,
+        qr_code_path=qr_url  # <- Important
+    )
+
+    # Configure wkhtmltopdf
+    config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+    options = {
+        'enable-local-file-access': '',
+    }
+
+    pdf_dir = os.path.join(current_app.root_path, 'static', 'bills')
+    os.makedirs(pdf_dir, exist_ok=True)
+    pdf_path = os.path.join(pdf_dir, f'invoice_{order.id}.pdf')
+
+    # Generate PDF
+    pdfkit.from_string(rendered, pdf_path, configuration=config, options=options)
+
+    return send_file(pdf_path, as_attachment=True)
+
+
+@app.context_processor
+def inject_categories():
+    return dict(categories=Category.query.all())
 
 
 # Run the application

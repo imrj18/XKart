@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Your Orders</h2>
+
+    {% if orders %}
+    <table class="table table-striped mt-4">
+        <thead class="thead-dark">
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Placed On</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.customer_name }}</td>
+                <td>₹{{ order.total_amount }}</td>
+                <td>
+                    {% if order.status == 'Completed' %}
+                    <span class="badge bg-success">{{ order.status }}</span>
+                    {% elif order.status == 'Pending' %}
+                    <span class="badge bg-warning">{{ order.status }}</span>
+                    {% elif order.status == 'Processing' %}
+                    <span class="badge bg-info">{{ order.status }}</span>
+                    {% elif order.status == 'Cancelled' %}
+                    <span class="badge bg-danger">{{ order.status }}</span>
+                    {% else %}
+                    {{ order.status }}
+                    {% endif %}
+                </td>
+                <td>{{ order.created_at.strftime('%d %b %Y, %I:%M %p') }}</td>
+                <td>
+                    <a href="{{ url_for('order.vendor_order_details', order_id=order.id) }}" class="btn btn-primary btn-sm">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No orders found.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>XKart Invoice</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            border: 1px solid #eee;
+            padding: 30px;
+            background: #fff;
+            color: #555;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .logo img {
+            max-height: 60px;
+            display: inline-block;
+        }
+        table {
+            width: 100%;
+            line-height: inherit;
+            text-align: left;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        table th {
+            background: #28a745;
+            color: white;
+            padding: 10px;
+        }
+        table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .total-row {
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-style: italic;
+            color: #333;
+        }
+        .qr-code {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo.png', _external=True) }}">
+            <h2>XKart - Invoice</h2>
+        </div>
+
+        <p><strong>Order ID:</strong> {{ order.id }}</p>
+        <p><strong>Customer:</strong> {{ order.customer_name }} ({{ order.customer_email }})</p>
+        <p><strong>Status:</strong> {{ order.status }}</p>
+        <p><strong>Vendor:</strong> {{ order.vendor.shop_name }} ({{ order.vendor.email }})</p>
+        <p><strong>Order Date:</strong> {{ order.created_at.strftime('%d %B %Y %I:%M %p') }}</p>
+        <p><strong>Payment:</strong> {{ order.payment_method }} ({{ order.payment_status }})</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price ($)</th>
+                    <th>Total ($)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set grand_total = 0 %}
+                {% for item in order_items %}
+                    {% set total = item.product.price * item.quantity %}
+                    {% set grand_total = grand_total + total %}
+                    <tr>
+                        <td>{{ item.product.title }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ "%.2f"|format(item.product.price) }}</td>
+                        <td>{{ "%.2f"|format(total) }}</td>
+                    </tr>
+                {% endfor %}
+                <tr class="total-row">
+                    <td colspan="3" align="right">Bonus Discount:</td>
+                    <td>- $1.00</td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="3" align="right">Grand Total:</td>
+                    <td>${{ "%.2f"|format(order.total_amount-1) }}</td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <div class="qr-code">
+            <img src="{{ qr_code_path }}" width="120" height="120">
+        </div>
+
+        <div class="footer">
+            Thank you for shopping with XKart 💚<br> Visit again!
+        </div>
+    </div>
+</body>
+</html>
+

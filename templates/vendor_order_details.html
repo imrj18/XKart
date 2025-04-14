@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Vendor View: Order #{{ order.id }}</h2>
+
+    {% if order %}
+    <div class="card my-4">
+        <div class="card-body">
+            <h5 class="card-title">Customer Info</h5>
+            <p class="card-text"><strong>Name:</strong> {{ order.customer_name }}</p>
+            <p class="card-text"><strong>Email:</strong> {{ order.customer_email }}</p>
+            <p class="card-text"><strong>Order Placed:</strong> {{ order.created_at.strftime('%d %B, %Y %I:%M %p') }}</p>
+
+            <hr>
+            <h5 class="card-title">Payment Info</h5>
+            <p class="card-text"><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+            <p class="card-text"><strong>Payment Status:</strong> {{ order.payment_status }}</p>
+
+            <hr>
+            <h5 class="card-title">Order Status</h5>
+            <p class="card-text"><strong>Current Status:</strong> {{ order.status }}</p>
+
+            {% if current_user.is_authenticated and current_user.is_vendor and current_user.id == order.vendor_id %}
+            <form method="POST" action="{{ url_for('order.update_order_status', order_id=order.id) }}">
+                <div class="form-group">
+                    <label for="status">Update Status</label>
+                    <select class="form-control" name="status" id="status">
+                        <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                        <option value="Processing" {% if order.status == 'Processing' %}selected{% endif %}>Processing</option>
+                        <option value="Completed" {% if order.status == 'Completed' %}selected{% endif %}>Completed</option>
+                        <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-warning mt-2">Update Status</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <h4>Ordered Items</h4>
+    {% if order_items %}
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_items %}
+            <tr>
+                <td>{{ item.product.title }}</td>
+                <td>{{ item.quantity }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No items found for this order.</p>
+    {% endif %}
+    {% else %}
+    <p>Order not found.</p>
+    {% endif %}
+
+    <a href="{{ url_for('auth.dashboard') }}" class="btn btn-primary mt-3">Back to Dashboard</a>
+</div>
+{% endblock %}

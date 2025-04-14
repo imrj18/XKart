@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Order Details</h2>
+    {% if order %}
+    <div class="card my-4">
+        <div class="card-body">
+            <h5 class="card-title">Order ID: {{ order.id }}</h5>
+            <p class="card-text"><strong>Customer:</strong> {{ order.customer_name }}</p>
+            <p class="card-text"><strong>Email:</strong> {{ order.customer_email }}</p>
+            <p class="card-text"><strong>Status:</strong> {{ order.status }}</p>
+            <p class="card-text"><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+            <p class="card-text"><strong>Payment Status:</strong> {{ order.payment_status }}</p>
+            <p class="card-text"><strong>Order Placed:</strong> {{ order.created_at.strftime('%d %B, %Y %I:%M %p') }}</p>
+        </div>
+    </div>
+
+    <h4>Ordered Items</h4>
+    {% if order_items %}
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_items %}
+            <tr>
+                <td>{{ item.product.title }}</td>
+                <td>{{ item.quantity }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No items found for this order.</p>
+    {% endif %}
+
+    <h4 class="mt-4">Vendor Info</h4>
+    {% if vendor %}
+    <div class="card">
+        <div class="card-body">
+            <p><strong>Shop Name:</strong> {{ vendor.shop_name }}</p>
+            <p><strong>Vendor Name:</strong> {{ vendor.username }}</p>
+            <p><strong>Email:</strong> {{ vendor.email }}</p>
+            <p><strong>City:</strong> {{ vendor.city }}</p>
+            <p><strong>Area:</strong> {{ vendor.area }}</p>
+        </div>
+    </div>
+    {% else %}
+    <p>No vendor information available.</p>
+    {% endif %}
+
+    {% else %}
+    <p>Order not found.</p>
+    {% endif %}
+
+    <a href="{{ url_for('auth.dashboard') }}" class="btn btn-primary mt-3">Back to Dashboard</a>
+</div>
+{% endblock %}
+

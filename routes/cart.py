@@ -1,3 +1,5 @@
+import json
+
 from flask import Blueprint, render_template, redirect, url_for, session, flash, request
 from flask_login import login_required, current_user
 from sqlalchemy.exc import SQLAlchemyError
@@ -138,8 +140,43 @@ def update_cart(product_id):
     return redirect(url_for('cart.view_cart'))
 
 
-@bp.route('/checkout')
-@login_required
-def checkout():
-    """Placeholder checkout function."""
-    return "Checkout page coming soon!"
+# @bp.route('/checkout', methods=['GET', 'POST'])
+# @login_required
+# def checkout():
+#     cart = session.get('cart', {})
+#     cart_items = []
+#     total_price = 0
+#
+#     # Fetch product details from DB
+#     for product_id, quantity in cart.items():
+#         product = Product.query.get(int(product_id))
+#         if product:
+#             subtotal = product.price * quantity
+#             total_price += subtotal
+#             cart_items.append({
+#                 'id': product.id,
+#                 'name': product.title,
+#                 'price': product.price,
+#                 'quantity': quantity
+#             })
+#
+#     # Handle form submission
+#     if request.method == 'POST':
+#         full_name = request.form['full_name']
+#         email = request.form['email']
+#         address = request.form['address']
+#         city = request.form['city']
+#         state = request.form['state']
+#         zip_code = request.form['zip']
+#
+#         # Optional: Save order to DB
+#         # order = Order(user_id=current_user.id, total=total_price, status='Placed', ...)
+#         # db.session.add(order)
+#         # db.session.commit()
+#
+#         flash('Your order has been placed successfully!', 'success')
+#         session.pop('cart', None)  # Clear cart after order
+#         return redirect(url_for('home'))  # or redirect to 'order_success'
+#
+#     return render_template('checkout.html', cart_items=cart_items, total_price=total_price)
+

@@ -1,60 +1,80 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <!-- Site meta -->
+    <!-- Site Meta -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}xKart{% endblock %}</title>
+    {% block head %}{% endblock %}
 
     <!-- CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
 </head>
 <body>
 
+    <!-- Navigation -->
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('home') }}">xKart</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Left Navigation -->
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('category_page') }}">Categories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('categories_page') }}">Categories</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('nearby_vendor_page') }}">Nearby Vendors</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('cart.product_list') }}">Products</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('contact_page') }}">Contact</a></li>
                 </ul>
 
                 <!-- Search Form -->
-                <form class="form-inline my-2 my-lg-0 mx-auto">
-                    <div class="input-group input-group-sm">
-                        <input type="text" class="form-control" placeholder="Search...">
-                        <div class="input-group-append">
-                            <button type="button" class="btn btn-secondary">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-                <div class="d-flex align-items-center">
-    <!-- Cart Button -->
+<form class="form-inline my-2 my-lg-0 mx-auto" method="GET" action="{{ url_for('search_results') }}" style="max-width: 400px;">
+    <div class="input-group input-group-sm w-100">
+        <input
+            type="text"
+            name="search"
+            class="form-control"
+            placeholder="Search products..."
+            value="{{ request.args.get('search', '') }}"
+            style="border-radius: 0.25rem 0 0 0.25rem;">
+
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-success" style="border-radius: 0 0.25rem 0.25rem 0;">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+    </div>
+</form>
+
+
+                <!-- Right Side -->
+                <ul class="navbar-nav d-flex align-items-center">
+
+    <!-- Cart -->
     <li class="nav-item">
-        <a class="btn btn-success btn-sm ml-3" href="{{ url_for('cart.view_cart') }}">
+        <a class="btn btn-success btn-sm ml-2"
+           href="{{ url_for('cart.view_cart') }}"
+           style="min-width: 110px;">
             <i class="fa fa-shopping-cart"></i> View Cart
             <span class="badge badge-light">{{ cart_count if cart_count > 0 else '' }}</span>
         </a>
     </li>
 
-    <!-- Authentication Links -->
-    <li class="nav-item dropdown ml-3">
+    <!-- Auth -->
+    <li class="nav-item dropdown ml-2">
         {% if current_user.is_authenticated %}
-            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
+            <a class="btn btn-outline-success btn-sm dropdown-toggle"
+               href="#" id="userDropdown" role="button" data-toggle="dropdown"
+               style="min-width: 110px;">
                 {{ current_user.username }}
             </a>
             <div class="dropdown-menu dropdown-menu-right">
@@ -66,7 +86,9 @@
                 {% endif %}
             </div>
         {% else %}
-            <a class="btn btn-outline-success dropdown-toggle" href="#" id="loginDropdown" role="button" data-toggle="dropdown">
+            <a class="btn btn-outline-success btn-sm dropdown-toggle"
+               href="#" id="loginDropdown" role="button" data-toggle="dropdown"
+               style="min-width: 110px;">
                 Login
             </a>
             <div class="dropdown-menu dropdown-menu-right">
@@ -75,22 +97,27 @@
             </div>
         {% endif %}
     </li>
-</div>
+
+</ul>
 
             </div>
         </div>
     </nav>
 
+    <!-- Page Content -->
     {% block content %}{% endblock %}
 
     <!-- Footer -->
-    <footer class="text-light">
+    <footer class="text-light bg-dark mt-5 pt-4 pb-3">
         <div class="container">
             <div class="row">
+                <!-- About -->
                 <div class="col-md-3">
                     <h5>About</h5>
                     <p>Your go-to platform for connecting local vendors and customers.</p>
                 </div>
+
+                <!-- Info Links -->
                 <div class="col-md-2">
                     <h5>Informations</h5>
                     <ul class="list-unstyled">
@@ -100,6 +127,8 @@
                         <li><a href="/faq">FAQs</a></li>
                     </ul>
                 </div>
+
+                <!-- Other Links -->
                 <div class="col-md-2">
                     <h5>Other Links</h5>
                     <ul class="list-unstyled">
@@ -109,6 +138,8 @@
                         <li><a href="/careers">Careers</a></li>
                     </ul>
                 </div>
+
+                <!-- Contact Info -->
                 <div class="col-md-4">
                     <h5>Contact</h5>
                     <ul class="list-unstyled">
@@ -122,9 +153,9 @@
         </div>
     </footer>
 
-    <!-- JS -->
-    <script src="//code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <!-- JS Scripts -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
 </html>

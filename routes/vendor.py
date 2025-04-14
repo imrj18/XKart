@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
 from models import Order
+from models.category import Category
 # from werkzeug.utils import secure_filename
 # import os
 
@@ -46,8 +47,8 @@ def add_product():
             title = request.form.get('title')
             description = request.form.get('description')
             price = float(request.form.get('price'))
+            category_id = int(request.form.get('category_id'))
 
-            # Handle file upload
             image = request.files.get('image')
             if image and allowed_file(image.filename):
                 filename = secure_filename(image.filename)
@@ -58,16 +59,15 @@ def add_product():
                 flash('Invalid image file format or no file uploaded', 'danger')
                 return redirect(url_for('vendor.add_product'))
 
-            # Create a new product object with the current vendor's ID
             new_product = Product(
                 title=title,
                 description=description,
                 price=price,
                 image=filename,
-                vendor_id=current_user.id  # Assuming the current_user is a vendor
+                vendor_id=current_user.id,
+                category_id=category_id
             )
 
-            # Add the product to the database
             db.session.add(new_product)
             db.session.commit()
 
@@ -78,7 +78,9 @@ def add_product():
         print("Error while adding product:", e)
         flash('An error occurred while adding the product.', 'danger')
 
-    return render_template('add_product.html')
+    categories = Category.query.all()
+    return render_template('add_product.html', categories=categories)
+
 
 
 @bp.route('/edit_product/<int:product_id>', methods=['GET', 'POST'])
@@ -296,7 +298,7 @@ def view_order_details(order_id):
 def view_orders():
     # Fetch orders for the logged-in vendor
     orders = Order.query.filter_by(vendor_id=current_user.id).all()
-    return render_template('view_orders.html', orders=orders)
+    return render_template('vendor_view_orders.html', orders=orders)
 
 
 @bp.route('/vendor/<int:vendor_id>/products')
